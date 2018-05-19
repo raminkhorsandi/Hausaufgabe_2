@@ -25,10 +25,10 @@ int main(){
 
 		/* free args */
 		free(args);
-	}	
+	}
 }
 
-/* prints a beautiful prompt */ 
+/* prints a beautiful prompt */
 void print_prompt(){
 	printf("\x1B[31mss2018\x1B[0m@\x1B[34msysprog\x1B[0m: ");
 }
@@ -113,6 +113,8 @@ void execute_cmd(char * args[], int bg){
 		return;
 	}
 
+	args = NULL;
+	bg = 0;
 	/* TODO Your code here -- Aufgabe 1 */
 
 }
@@ -146,5 +148,3 @@ void shell_exit(){
 	printf("Shell exiting\n");
 	exit(0);
 }
-
-
