@@ -113,10 +113,19 @@ void execute_cmd(char * args[], int bg){
 		return;
 	}
 
-	
+	pid_t pid = fork();
 
-	/* TODO Your code here -- Aufgabe 1 */
-
+	if (0 == pid) { // Kindprozess
+		execvp(args[0], &args[0]);
+		printf("Das auszufuehrende Programm konnte nicht gestartet werden.\n");
+		return;
+	} else { // Elternprozess
+		if (0 == bg) { // vordergrund
+			waitpid(pid, NULL, 0);
+		}
+		// hintergrund
+	}
+	return;
 }
 
 
