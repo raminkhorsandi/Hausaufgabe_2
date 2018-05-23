@@ -113,8 +113,8 @@ void execute_cmd(char * args[], int bg){
 		return;
 	}
 
-	args = NULL;
-	bg = 0;
+	
+
 	/* TODO Your code here -- Aufgabe 1 */
 
 }
