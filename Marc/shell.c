@@ -160,7 +160,7 @@ int update_children(){
  *  eingetippt wird. Diese Funktion beendet die Shell, jedoch soll sie zuerst darauf
  *  warten, dass alle Hintergrundprozesse beendet wurden.
  */
-void shell_exit(){
+void shell_exit() {
 	// prozesse, die aktuell noch laufenden
 	int count = update_children();
 	int count_alt = -1;
