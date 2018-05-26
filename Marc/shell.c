@@ -114,16 +114,19 @@ void execute_cmd(char * args[], int bg){
 	}
 
 	pid_t pid = fork();
-
 	if (0 == pid) { // Kindprozess
-		execvp(args[0], &args[0]);
+		execvp(args[0], &args[0]); // fuehre Programm aus
 		printf("Das auszufuehrende Programm konnte nicht gestartet werden.\n");
-		return;
+		return; // bei fehlschlag terminiere kind
 	} else { // Elternprozess
-		if (0 == bg) { // vordergrund
-			waitpid(pid, NULL, 0);
+		if (0 == bg) { // Vordergrund
+			waitpid(pid, NULL, 0); // auf Kindprozess warten
+		} else { // Hintergrund
+			// im Elternprozess werden die Kindprozesse dokumentiert (nur für Hintergrundprozesse)
+			int i;
+			for(i = 0; i < PIDS_SIZE && children[i] != 0; ++i) ; // finde erste freie Stelle
+			children[i] = pid; // add pid to children;
 		}
-		// hintergrund
 	}
 	return;
 }
@@ -140,10 +143,17 @@ void execute_cmd(char * args[], int bg){
  *   Prozesse zurückgeben. Prozesse die beendet wurden zählen nicht dazu
  */
 int update_children(){
+	int count = 0;
+	for(int i = 0; i < PIDS_SIZE; ++i) { // durchlaufe children
+		// check ob children[i] einen Prozess beinhaltet & ist terminiert?
+		if (children[i] != 0 && waitpid(children[i], NULL, WNOHANG) != 0) {
+			children[i] = 0;
+		}
+		if (children[i] != 0) // beruecksichtige alle eintraege != 0 um aktive prozesse zu zaehlen
+			++count;
+	}
 
-	/* TODO Your code here -- Aufgabe 2 */
-
-	return 0;
+	return count;
 }
 
 /* Diese Funktion wird aufgerufen, falls das Stichwort "exit" in der Shell
@@ -151,8 +161,20 @@ int update_children(){
  *  warten, dass alle Hintergrundprozesse beendet wurden.
  */
 void shell_exit(){
-
-	/* TODO Your code here -- Aufgabe 3 */
+	// prozesse, die aktuell noch laufenden
+	int count = update_children();
+	int count_alt = -1;
+	while (count > 0) {
+		count = update_children(); // update count
+		if (count_alt != count) { // wenn sich der count veraendert hat, neue ausgabe
+			if (1 < count) {
+				printf("Es laufen noch %d Programme.\n", count);
+			} else if (1 == count) {
+				printf("Es laeuft noch %d Programm.\n", count);
+			}
+		}
+		count_alt = count; // um den alten zustand von count zu speichern
+	}
 
 	printf("Shell exiting\n");
 	exit(0);
